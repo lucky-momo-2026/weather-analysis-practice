@@ -52,12 +52,13 @@ def main():
         min_rain = min(rain_list)
 
 
-        max_month_index = rain_list.index(max_rain)
+        max_months = [MONTHS[i] for i, v in enumerate(rain_list) if v == max_rain] #enumerat()は番号と値を扱うことができる
+        min_months = [MONTHS[i] for i, v in enumerate(rain_list) if v == min_rain]
         min_month_index = rain_list.index(min_rain)
 
         print("----", city, "----")
-        print("雨が最も多い月：", MONTHS[max_month_index], f"{max_rain}mm")
-        print("雨が最も少ない月：", MONTHS[min_month_index], f"{min_rain}mm")
+        print("雨が最も多い月："," / ".join(max_months), f"{max_rain}mm")  #"/".joinで複数月を見やすく表示できる
+        print("雨が最も少ない月："," / ".join(min_months), f"{min_rain}mm")
         print()
 
 if __name__ == "__main__":
