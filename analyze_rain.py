@@ -19,9 +19,9 @@ def load_rainfall_data(csv_path):
     try:
         float(rows[0][1])
     except (ValueError, IndexError):
-        stat_index = 1
+        start_index = 1
 
-    for row in rows[stat_index:]:
+    for row in rows[start_index:]:
         if len(row) < 13:
             raise ValueError("各行は１３行（都市名＋１２か月）必要です")
 
@@ -54,13 +54,22 @@ def main():
 
         max_months = [MONTHS[i] for i, v in enumerate(rain_list) if v == max_rain] #enumerat()は番号と値を扱うことができる
         min_months = [MONTHS[i] for i, v in enumerate(rain_list) if v == min_rain]
-        min_month_index = rain_list.index(min_rain)
 
         print("----", city, "----")
         print("雨が最も多い月："," / ".join(max_months), f"{max_rain}mm")  #"/".joinで複数月を見やすく表示できる
         print("雨が最も少ない月："," / ".join(min_months), f"{min_rain}mm")
         print("年間平均降水量：", f"{avg_rain:.1f}mm")  #.1f　小数点１桁表示する
-        print()
+
+    ranking = sorted(            #sorted(... key=...)で並び替えの基準を指定
+        rainfall_data.items(),  
+        key=lambda item: sum(item[1]) / len(item[1]),  
+        reverse=True  #大きい順で並べ替え
+    ) 
+      
+    print("\n=== 年間平均降水量ランキング ===")  #\nとprint()は同じ意味　１行空ける
+    for i, (city, rain_list) in enumerate(ranking, start=1):  #enumerate(..., start=1)で順位表示
+        avg_rain = sum(rain_list) / len(rain_list)
+        print(f"{i}位： {city} ({avg_rain:.1f}mm)")
 
 if __name__ == "__main__":
     main()
