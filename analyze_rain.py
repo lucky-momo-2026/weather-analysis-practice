@@ -50,7 +50,7 @@ def main():
     for city, rain_list in rainfall_data.items():
         max_rain = max(rain_list)
         min_rain = min(rain_list)
-
+        avg_rain = sum(rain_list) / len(rain_list)
 
         max_months = [MONTHS[i] for i, v in enumerate(rain_list) if v == max_rain] #enumerat()は番号と値を扱うことができる
         min_months = [MONTHS[i] for i, v in enumerate(rain_list) if v == min_rain]
@@ -59,6 +59,7 @@ def main():
         print("----", city, "----")
         print("雨が最も多い月："," / ".join(max_months), f"{max_rain}mm")  #"/".joinで複数月を見やすく表示できる
         print("雨が最も少ない月："," / ".join(min_months), f"{min_rain}mm")
+        print("年間平均降水量：", f"{avg_rain:.1f}mm")  #.1f　小数点１桁表示する
         print()
 
 if __name__ == "__main__":
