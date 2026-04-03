@@ -4,6 +4,22 @@ import sys  #csvファイルを受取るので変わらない
 
 MONTHS = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
 
+def print_city_report(city, rain, MONTH_MAP):
+    print(f' -----{city}----- ')
+    print('最大降水量：', rain.max(), 'mm')
+    print('最小降水量：', rain.min(), 'mm')
+
+    avg = round(rain.mean(), 1)
+    print('平均降水量：', avg, 'mm')
+
+    month = rain.idxmax().capitalize()
+    jp_month = MONTH_MAP[month]
+    print('最大降水月：', jp_month)
+    print()
+
+    return avg
+
+
 def main():
     if len(sys.argv) < 2:
         print("使い方：Python analyze_rain.py <csvファイルパス>")
@@ -27,39 +43,15 @@ def main():
         avg_rain = {}  #都市名・平均降水量をセットで入れる辞書
 
         for city, rain in df.iterrows():  # tokyo = df. loc[]は名前でその列のデータを抽出、for 〇, △ in df.iterrrows()は〇が行番号、△が行のデータ抽出
+  
+            avg = print_city_report(city,rain, MONTH_MAP)
+            avg_rain[city] = avg
 
-            print(f' -----{city}----- ')  
-            print('最大降水量：', rain.max(), 'mm')  #cityがないとどこのデータがわからなくなるため必要
-            print('最小降水量：', rain.min(), 'mm')
-
-            avg = round(rain.mean(), 1)  #辞書にその年の平均を出してavgに入れる
-            avg_rain[city] = avg  #辞書に保存する
-            print('平均降水量：', avg, 'mm')  #上でavgという辞書を作ったのでavgに置き換え
-
-            month = rain.idxmax().capitalize()  # CSVが英語（月名）の場合は日本語に変換するために使う 全都市なのでrainに変更
-            jp_month = MONTH_MAP[month]
-            
-            print('最大降水月：', jp_month)
-            print()
-
-        top_city = max(avg_rain, key=avg_rain.get)  #値が一番大きい都市名を取り出す
-      
         print()
-        print(' -----集計結果----- ')
+        print(' -----集計結果-----')
+        top_city = max(avg_rain, key=avg_rain.get)
         print('平均降水量が最も多い都市：', top_city)
-        print('平均降水量：', avg_rain[top_city], 'mm')
-
-        low_city = min(avg_rain, key=avg_rain.get)
-        print('平均降水量が最も少ない都市：', low_city)
-        print('平均降水量：', avg_rain[low_city], 'mm')
-
-        top_month = month_total.idxmax()
-        jp_top_month = MONTH_MAP[top_month.capitalize()]
-        print('降水量が最も多い月：', jp_top_month)
-
-        low_month = month_total.idxmin()
-        jp_low_month = MONTH_MAP[low_month.capitalize()]
-        print('降水量が最も少ない月：', jp_low_month)    
+        print('平均降水量', avg_rain[top_city], 'mm')
 
     except Exception as e:
         print(f"csv読み込みエラー; {e}")
