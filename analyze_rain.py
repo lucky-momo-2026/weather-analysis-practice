@@ -1,4 +1,6 @@
 import pandas as pd  #pandasライブラリを使えるようにする　pdは省略名
+import matplotlib.pyplot as plt  #グラフを表示・保存するためのライブラリ
+plt.rcParams['font.family'] = 'Yu Gothic'  #日本語フォントの設定
 import sys  #csvファイルを受取るので変わらない
 
 
@@ -30,6 +32,16 @@ def print_summary(avg_rain):
     low_city = min(avg_rain,key=avg_rain.get)  #平均降水量が一番少ない都市名を取得
     print('平均降水量最小都市：', low_city)
     print('平均降水量：', avg_rain[low_city], 'mm')
+
+#平均降水量の棒グラフを表示
+    cities = list(avg_rain.keys())  #都市名のリスト
+    values = list(avg_rain.values())  #棒グラフのタイトル
+
+    plt.bar(cities,values)  #棒グラフを作成
+    plt.title('平均降水量')  #グラフのタイトル
+    plt.ylabel('mm')  #縦軸の単位
+    plt.savefig('rainfall.png')  #グラフを画像ファイルとして保存
+    plt.show()  #グラフを表示 
 
 def main():
     if len(sys.argv) < 2:
