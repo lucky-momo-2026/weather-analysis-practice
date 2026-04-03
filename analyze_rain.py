@@ -5,21 +5,32 @@ import sys  #csvファイルを受取るので変わらない
 
 
 MONTHS = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
-# １都市分の降水量データを分析し、結果を表示して平均値を返す関数
+
+#１都市分の行使量データを分析し、結果を表示して分析、結果を表示して分析結果を返す関数
 def print_city_report(city, rain, MONTH_MAP):
     print(f' ------{city}------ ')
     print('最大降水量：', rain.max(), 'mm')
     print('最小降水量：', rain.min(), 'mm')
 
-    avg = round(rain.mean(), 1)  #平均降水量を少数点１桁で計算
+    avg = round(rain.mean(), 1)  #, 1 平均降水量を小数点１桁で計算
     print('平均降水量：', avg, 'mm')
 
-    month = rain.idxmax().capitalize()  #降水量最大月（英語）を取得
+    month = rain.idxmax()  # 最大の月を取得
+    month = month.capitalize()  # 先頭を大文字にする
+  
     jp_month = MONTH_MAP[month]
     print('最大降水月：', jp_month)
     print()
+      
+    return{
+        '都市名': city,
+        '最大降水量(mm)': rain.max(),
+        '最小降水量(mm)': rain.min(),
+        '平均降水量(mm)': avg,
+        '最大降水月': jp_month
+    }
 
-    return avg
+
 
 # 全都市の平均降水量データから、最も多い都市を表示する関数
 def print_summary(avg_rain):
@@ -64,10 +75,13 @@ def main():
         } 
 
         avg_rain = {}  #都市名・平均降水量をセットで入れる辞書
+        report_rows = []  #各都市の分析結果をCSVようにためるリスト
+
 
         for city, rain in df.iterrows():  # tokyo = df. loc[]は名前でその列のデータを抽出、for 〇, △ in df.iterrrows()は〇が行番号、△が行のデータ抽出
-            avg = print_city_report(city,rain, MONTH_MAP)
-            avg_rain[city] = avg
+            report =print_city_report(city,rain, MONTH_MAP) #１年分の分析結果を受取る
+            avg_rain[city] = report['平均降水量(mm)']  #集計用に平均だけ辞書へ入れる
+            report_rows.append(report) #csvように１年分の結果をためる
 
         print_summary(avg_rain)  #全年の集計結果を表示
 
