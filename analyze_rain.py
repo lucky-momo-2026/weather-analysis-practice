@@ -44,7 +44,7 @@ def print_summary(avg_rain):
     print('平均降水量最小都市：', low_city)
     print('平均降水量：', avg_rain[low_city], 'mm')
 
-#平均降水量の棒グラフを表示
+#平均降水量の棒グラフを表示(単体)
     cities = list(avg_rain.keys())  #都市名のリスト
     values = list(avg_rain.values())  #棒グラフのタイトル
 
@@ -53,6 +53,24 @@ def print_summary(avg_rain):
     plt.ylabel('mm')  #縦軸の単位
     plt.savefig('rainfall.png')  #グラフを画像ファイルとして保存
     plt.show()  #グラフを表示 
+
+    #折れ線グラフ（単体）
+    plt.figure()  #新しいグラフを作る
+    plt.plot(cities, values, marker='o')  #折れ線グラフ
+    plt.title('平均降水量（折れ線）')
+    plt.ylabel('mm')
+    plt.savefig('line_graph.png')  ##グラフを画像ファイルとして保存
+    plt.show()
+
+    #合体グラフ（棒＋折れ線）
+    plt.figure()  #新しいグラフ
+    plt.bar(cities,values) #棒グラフ
+    plt.plot(cities, values, marker='o')  #折れ線グラフ
+    plt.title('平均降水量（棒＋折れ線）')
+    plt.ylabel('mm')
+    plt.savefig('combined_graph.png')  #保存
+    plt.show()
+
 
 def main():
     if len(sys.argv) < 2:
