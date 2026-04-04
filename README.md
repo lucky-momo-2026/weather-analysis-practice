@@ -95,6 +95,7 @@ python analyze_rain.py rainfall.csv
 | `line_graph.png` | 都市別平均降水量の折れ線グラフ |
 | `combined_graph.png` | 棒グラフ＋折れ線グラフの合体グラフ |
 | `rainfall_result.csv` | 都市別分析結果（平均降水量の多い順） |
+| `all_graph.png` | 3種類のグラフを1枚にまとめた画像 |
 
 ---
 
