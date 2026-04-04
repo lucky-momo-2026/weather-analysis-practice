@@ -17,9 +17,14 @@ def print_city_report(city, rain, MONTH_MAP):
 
     month = rain.idxmax()  # 最大の月を取得
     month = month.capitalize()  # 先頭を大文字にする
-  
     jp_month = MONTH_MAP[month]
     print('最大降水月：', jp_month)
+
+    min_month = rain.idxmin()  #降水最月の取得
+    min_month = min_month.capitalize()  #先頭を大文字にする
+    jp_min_month = MONTH_MAP[min_month]
+    print('最小降水月：', jp_min_month)
+    
     print()
       
     return{
@@ -27,13 +32,13 @@ def print_city_report(city, rain, MONTH_MAP):
         '最大降水量(mm)': rain.max(),
         '最小降水量(mm)': rain.min(),
         '平均降水量(mm)': avg,
-        '最大降水月': jp_month
+        '最大降水月': jp_month,
+        '最小降水月': jp_min_month
     }
-
-
 
 # 全都市の平均降水量データから、最も多い都市を表示する関数
 def print_summary(avg_rain):
+
     print(' ------集計結果------ ')
 
     top_city = max(avg_rain, key=avg_rain.get)  # 平均降水量が一番大きい都市名を取得
@@ -64,8 +69,8 @@ def print_summary(avg_rain):
 
     #合体グラフ（棒＋折れ線）
     plt.figure()  #新しいグラフ
-    plt.bar(cities,values) #棒グラフ
-    plt.plot(cities, values, marker='o')  #折れ線グラフ
+    plt.bar(cities,values, color='skyblue') #棒グラフ
+    plt.plot(cities, values, marker='o', color='blue')  #折れ線グラフ
     plt.title('平均降水量（棒＋折れ線）')
     plt.ylabel('mm')
     plt.savefig('combined_graph.png')  #保存
@@ -102,6 +107,13 @@ def main():
             report_rows.append(report) #csvように１年分の結果をためる
 
         print_summary(avg_rain)  #全年の集計結果を表示
+
+        report_df = pd.DataFrame(report_rows)   #リストを表に変換
+        report_df = report_df.sort_values(by='平均降水量(mm)', ascending=False)  #平均降水量が多い順に並べ替え
+        report_df['順位'] = range(1, len(report_df) + 1)  #順位を追加　１位からスタート
+        report_df = report_df[['順位', '都市名','最大降水量(mm)', '最小降水量(mm)', '最大降水月', '最小降水月']]
+        report_df.to_csv('rainfall_result.csv', index=False, encoding='utf-8-sig')  #CVS保存
+        print('分析結果を rainfall_result.cvs に保存しました')
 
     except Exception as e:
         print(f"csv読み込みエラー; {e}")
