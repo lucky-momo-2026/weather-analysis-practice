@@ -107,7 +107,17 @@ def main():
         report_df = pd.DataFrame(report_rows)   #リストを表に変換
         report_df = report_df.sort_values(by='平均降水量(mm)', ascending=False)  #平均降水量が多い順に並べ替え
         report_df['順位'] = range(1, len(report_df) + 1)  #順位を追加　１位からスタート
-        report_df = report_df[['順位', '都市名','最大降水量(mm)', '最小降水量(mm)', '平均降水量(mm)', '最大降水月', '最小降水月']]
+
+        def rank_label(rank):  #評価ランクを追加（S/A/B）
+            if rank == 1:
+                return 'S'
+            elif rank <= 3:
+                return 'A'
+            else: return 'B'
+        
+        report_df['評価'] = report_df['順位'].apply(rank_label)
+
+        report_df = report_df[['順位', '評価', '都市名','最大降水量(mm)', '最小降水量(mm)', '平均降水量(mm)', '最大降水月', '最小降水月']]
         report_df.to_csv('rainfall_result.csv', index=False, encoding='utf-8-sig')  #CVS保存
         print('分析結果を rainfall_result.cvs に保存しました')
 
