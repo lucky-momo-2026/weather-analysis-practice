@@ -38,7 +38,6 @@ def print_city_report(city, rain, MONTH_MAP):
 
 # 全都市の平均降水量データから、最も多い都市を表示する関数
 def print_summary(avg_rain):
-
     print(' ------集計結果------ ')
 
     top_city = max(avg_rain, key=avg_rain.get)  # 平均降水量が一番大きい都市名を取得
@@ -53,29 +52,26 @@ def print_summary(avg_rain):
     cities = list(avg_rain.keys())  #都市名のリスト
     values = list(avg_rain.values())  #棒グラフのタイトル
 
+    plt.figure(figsize=(15, 4))  #全体のサイズ
+
+    plt.subplot(1, 3, 1)
     plt.bar(cities,values)  #棒グラフを作成
-    plt.title('平均降水量')  #グラフのタイトル
-    plt.ylabel('mm')  #縦軸の単位
-    plt.savefig('rainfall.png')  #グラフを画像ファイルとして保存
-    plt.show()  #グラフを表示 
+    plt.title('平均降水量(棒グラフ)')  #グラフのタイトル
 
     #折れ線グラフ（単体）
-    plt.figure()  #新しいグラフを作る
+    plt.subplot(1, 3, 2)
     plt.plot(cities, values, marker='o')  #折れ線グラフ
-    plt.title('平均降水量（折れ線）')
-    plt.ylabel('mm')
-    plt.savefig('line_graph.png')  ##グラフを画像ファイルとして保存
-    plt.show()
+    plt.title('平均降水量（折れ線グラフ）')
 
     #合体グラフ（棒＋折れ線）
-    plt.figure()  #新しいグラフ
+    plt.subplot(1, 3, 3)
     plt.bar(cities,values, color='skyblue') #棒グラフ
     plt.plot(cities, values, marker='o', color='blue')  #折れ線グラフ
-    plt.title('平均降水量（棒＋折れ線）')
-    plt.ylabel('mm')
-    plt.savefig('combined_graph.png')  #保存
+    plt.title('平均降水量（比較グラフ）')
+    
+    plt.tight_layout()  #レイアウト調整
+    plt.savefig('all_graph.png')
     plt.show()
-
 
 def main():
     if len(sys.argv) < 2:
@@ -111,7 +107,7 @@ def main():
         report_df = pd.DataFrame(report_rows)   #リストを表に変換
         report_df = report_df.sort_values(by='平均降水量(mm)', ascending=False)  #平均降水量が多い順に並べ替え
         report_df['順位'] = range(1, len(report_df) + 1)  #順位を追加　１位からスタート
-        report_df = report_df[['順位', '都市名','最大降水量(mm)', '最小降水量(mm)', '最大降水月', '最小降水月']]
+        report_df = report_df[['順位', '都市名','最大降水量(mm)', '最小降水量(mm)', '平均降水量(mm)', '最大降水月', '最小降水月']]
         report_df.to_csv('rainfall_result.csv', index=False, encoding='utf-8-sig')  #CVS保存
         print('分析結果を rainfall_result.cvs に保存しました')
 
