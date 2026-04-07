@@ -56,7 +56,7 @@ def main():
 
     df = pd.DataFrame(all_data)  #辞書をデータフレームに変換
     
-    df.to_csv('rain_data.csv', encoding='utf-8-sig')  #CSVに保存
+    df.T.to_csv('rain_data.csv', encoding='utf-8-sig', index_label='月')  #CSVに保存
     print('rain_data.csvに保存しました！')
 
 if __name__ == '__main__':
