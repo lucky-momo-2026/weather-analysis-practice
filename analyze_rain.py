@@ -76,17 +76,27 @@ def print_summary(avg_rain):
     plt.ylabel('降水量(mm)')
     plt.legend()
 
+    #合体グラフ（棒＋折れ線）
+    plt.figure(figsize=(8,5))
+
+    X = range(len(city_names))
+
+    #棒グラフ(2023,2024)
+    plt.bar([i - 0.2 for i in x], data_by_year['2023'], width=0.4, label='2023年(棒)')
+    plt.bar([i + 0.2 for i in x], data_by_year['2024'], width=0.4, label='2024年(棒)')
+
+    #折れ線グラフ(2023,2024)
+    plt.plot(x, data_by_year['2023'], marker='o', label='2023年(線)')
+    plt.plot(x, data_by_year['2024'], marker='o', label='2024年(線)')
+
+    plt.xticks(x, city_names)
+    plt.title('平均降水量比較(合体グラフ)')
+    plt.ylabel('降水量(mm)')
+    plt.legend()
+
     plt.tight_layout()
-    plt.savefig('rainfall_compare.png')
+    plt.savefig('rainfall_combo.png')
     plt.show()
-
-    for year in years:
-        print(f'year={year}, key列：札幌_{year}')
-        print(f"avg_rainにある？： {'札幌_' + year in avg_rain}")
-        data_by_year[year] = [avg_rain[f'{city}_{year}'] for city in city_names]
-
-        print(repr('札幌_' + year))
-        print(repr(list(avg_rain.keys()))[0])
 
 def main():
     if len(sys.argv) < 2:
