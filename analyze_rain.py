@@ -16,12 +16,10 @@ def print_city_report(city, rain, MONTH_MAP):
     print('平均降水量：', avg, 'mm')
 
     month = rain.idxmax()  # 最大の月を取得
-    month = month.capitalize()  # 先頭を大文字にする
     jp_month = MONTH_MAP[month]
     print('最大降水月：', jp_month)
 
     min_month = rain.idxmin()  #降水最月の取得
-    min_month = min_month.capitalize()  #先頭を大文字にする
     jp_min_month = MONTH_MAP[min_month]
     print('最小降水月：', jp_min_month)
     
@@ -38,6 +36,7 @@ def print_city_report(city, rain, MONTH_MAP):
 
 # 全都市の平均降水量データから、最も多い都市を表示する関数
 def print_summary(avg_rain):
+    print(avg_rain)
     print(' ------集計結果------ ')
 
     top_city = max(avg_rain, key=avg_rain.get)  # 平均降水量が一番大きい都市名を取得
@@ -48,30 +47,46 @@ def print_summary(avg_rain):
     print('平均降水量最小都市：', low_city)
     print('平均降水量：', avg_rain[low_city], 'mm')
 
-#平均降水量の棒グラフを表示(単体)
-    cities = list(avg_rain.keys())  #都市名のリスト
-    values = list(avg_rain.values())  #棒グラフのタイトル
+    #グラフ表示都市名と都市を分ける
+    city_names = ['札幌', '東京', '名古屋', '大阪', '福岡']
+    years = ['2023', '2024']
 
-    plt.figure(figsize=(15, 4))  #全体のサイズ
+    #年ごとの平均降水量を取り出す
+    data_by_year = {}
+    for year in years:
+        data_by_year[year] = [avg_rain[f'{city}_{year}'] for city in city_names]
 
-    plt.subplot(1, 3, 1)
-    plt.bar(cities,values)  #棒グラフを作成
-    plt.title('平均降水量(棒グラフ)')  #グラフのタイトル
-
-    #折れ線グラフ（単体）
-    plt.subplot(1, 3, 2)
-    plt.plot(cities, values, marker='o')  #折れ線グラフ
-    plt.title('平均降水量（折れ線グラフ）')
-
-    #合体グラフ（棒＋折れ線）
-    plt.subplot(1, 3, 3)
-    plt.bar(cities,values, color='skyblue') #棒グラフ
-    plt.plot(cities, values, marker='o', color='blue')  #折れ線グラフ
-    plt.title('平均降水量（比較グラフ）')
+    plt.figure(figsize=(15,5))  #全体のサイズ
     
-    plt.tight_layout()  #レイアウト調整
-    plt.savefig('all_graph.png')
+    #棒グラフグループ
+    plt.subplot(1, 2, 1)
+    x = range(len(city_names))  #都市の位置
+    plt.bar([i - 0.2 for i in x], data_by_year['2023'], width=0.4, label='2023年')
+    plt.bar([i + 0.2 for i in x], data_by_year['2024'], width=0.4, label='2024年') 
+    plt.xticks(x, city_names)  #都市名を表示
+    plt.title('平均降水量比較（棒グラフ）')
+    plt.ylabel('降水量(mm)')
+    plt.legend()  #凡例を表示
+        
+    #折れ線グラフ（２年分を重ねる）
+    plt.subplot(1, 2, 2)
+    plt.plot(city_names, data_by_year['2023'], marker='o', label="2023年")
+    plt.plot(city_names, data_by_year['2024'], marker="o", label='2024年')
+    plt.title('平均降水量比較（折れ線グラフ）')
+    plt.ylabel('降水量(mm)')
+    plt.legend()
+
+    plt.tight_layout()
+    plt.savefig('rainfall_compare.png')
     plt.show()
+
+    for year in years:
+        print(f'year={year}, key列：札幌_{year}')
+        print(f"avg_rainにある？： {'札幌_' + year in avg_rain}")
+        data_by_year[year] = [avg_rain[f'{city}_{year}'] for city in city_names]
+
+        print(repr('札幌_' + year))
+        print(repr(list(avg_rain.keys()))[0])
 
 def main():
     if len(sys.argv) < 2:
@@ -84,14 +99,16 @@ def main():
 
         df = pd.read_csv(csv_path)  #読み込むからread
         df = df.set_index(df.columns[0])  # df.columns は DataFrame列名　ここではcity の部分から呼び出す
+        print(df.columns)
         month_total = df.sum()
 
-        MONTH_MAP ={  #fetch_rain.pyが読み込めるように英語読みを変える
+        MONTH_MAP = {
             "1": "1月", "2": "2月", "3": "3月",
             "4": "4月", "5": "5月", "6": "6月",
             "7": "7月", "8": "8月", "9": "9月",
             "10": "10月", "11": "11月", "12": "12月"
         }
+        
         avg_rain = {}  #都市名・平均降水量をセットで入れる辞書
         report_rows = []  #各都市の分析結果をCSVようにためるリスト
 
