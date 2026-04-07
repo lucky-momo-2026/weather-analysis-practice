@@ -15,7 +15,7 @@ CITIES = {
 # 気象庁のURLテンプレート
 BASE_URL = "https://www.data.jma.go.jp/obd/stats/etrn/view/monthly_s1.php"
 
-YEAR = 2023
+YEARS = [2023,2024]
 
 def fetch_rain(city, prec_no, block_no, year):
     url = f"{BASE_URL}?prec_no={prec_no}&block_no={block_no}&year={year}"  #気象庁のURLを組み立てる
@@ -43,14 +43,15 @@ def fetch_rain(city, prec_no, block_no, year):
 def main():
     all_data = {}  #全年の降水量データを入れる辞書
 
-    for city, info in CITIES.items():  #５都市を１つずつ処理
-        print(f'{city}のデータを取得中...')
+    for year in YEARS:  #年ごとに処理をする
+        for city, info in CITIES.items():  #５都市を１つずつ処理する
+            print(f'{year}年 {city}のデータを取得中...')
     
-        rain = fetch_rain(city, info['prec_no'], info['block_no'], YEAR)  #rainに都市番号と地方ナンバーと都市を指定
+            rain = fetch_rain(city, info['prec_no'], info['block_no'], year)  #rainに都市番号と地方ナンバーと都市を指定
         
-        all_data[city] = rain  #都市名をキーにして降水量データを追加   
+            all_data[f'{city}_{year}'] = rain  #都市名と年キーにして降水量データを追加   
         
-        time.sleep(1)  #サーバーへの負荷を防ぐため１秒待つ
+            time.sleep(1)  #サーバーへの負荷を防ぐため１秒待つ
 
     print('取得完了！' )
 
