@@ -66,6 +66,8 @@ def print_summary(avg_rain):
     plt.xticks(x, city_names)  #都市名を表示
     plt.title('平均降水量比較（棒グラフ）')
     plt.ylabel('降水量(mm)')
+    max_value = max(max(data_by_year['2023']),max(data_by_year['2024']))
+    plt.ylim(0, max_value * 1.1)
     plt.legend()  #凡例を表示
         
     #折れ線グラフ（２年分を重ねる）
