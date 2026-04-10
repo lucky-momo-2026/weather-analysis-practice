@@ -13,6 +13,7 @@ def print_city_report(city, rain, MONTH_MAP):
     print('最小降水量：', rain.min(), 'mm')
 
     avg = round(rain.mean(), 1)  #, 1 平均降水量を小数点１桁で計算
+
     print('平均降水量：', avg, 'mm')
 
     month = rain.idxmax()  # 最大の月を取得
@@ -22,6 +23,17 @@ def print_city_report(city, rain, MONTH_MAP):
     min_month = rain.idxmin()  #降水最月の取得
     jp_min_month = MONTH_MAP[min_month]
     print('最小降水月：', jp_min_month)
+    
+    std = rain.std()  #標準偏差を出す
+    threshold = avg + std * 1.5  #異常値の判定　平均を超えた月が異常 
+    abnormal = rain[rain > threshold]  #しきい値を超えた月を取り出す
+
+    if len(abnormal) == 0:
+        print('異常値なし')
+    else:
+        for month, value in abnormal.items():
+            jp_month = MONTH_MAP[month]
+            print(f'☔異常値あり：{jp_month} {value}mm')
     
     print()
       
@@ -36,7 +48,6 @@ def print_city_report(city, rain, MONTH_MAP):
 
 # 全都市の平均降水量データから、最も多い都市を表示する関数
 def print_summary(avg_rain):
-    print(avg_rain)
     print(' ------集計結果------ ')
 
     top_city = max(avg_rain, key=avg_rain.get)  # 平均降水量が一番大きい都市名を取得
@@ -111,7 +122,6 @@ def main():
 
         df = pd.read_csv(csv_path)  #読み込むからread
         df = df.set_index(df.columns[0])  # df.columns は DataFrame列名　ここではcity の部分から呼び出す
-        print(df.columns)
         month_total = df.sum()
 
         MONTH_MAP = {
@@ -151,6 +161,8 @@ def main():
 
     except Exception as e:
         print(f"csv読み込みエラー; {e}")
+        import traceback
+        traceback.print_exc()
         return
 
 if __name__ == "__main__":
