@@ -31,8 +31,8 @@ def print_city_report(city, rain, MONTH_MAP):
     if len(abnormal) == 0:
         print('異常値なし')
     else:
-        for month, value in abnormal.items():
-            jp_month = MONTH_MAP[month]
+        for month, value in abnormal.items():  #異常がある月を１つずつ取り出す
+            jp_month = MONTH_MAP[month]  #月番号を日本語に変換
             print(f'☔異常値あり：{jp_month} {value}mm')
     
     print()
@@ -156,6 +156,30 @@ def main():
         report_df['評価'] = report_df['順位'].apply(rank_label)
 
         report_df = report_df[['順位', '評価', '都市名','最大降水量(mm)', '最小降水量(mm)', '平均降水量(mm)', '最大降水月', '最小降水月']]
+
+        #都市名列を_で分割して、都市と年の２列に分ける
+        report_df[['都市', '年']] = report_df['都市名'].str.split('_', expand=True)
+
+        #問ごとに年順に並べ変えて、前年比を計算士や宇久する
+        report_df = report_df.sort_values(by=['都市', '年']).reset_index(drop=True)
+        
+        #同じ都市の１つ前の行の平均降水量を取り出す（都市をまたがないようにgroupdyを使う）
+        report_df['前年平均比(mm)'] = report_df.groupby('都市')['平均降水量(mm)'].shift(1)
+
+        #前年との差(mm)を計算する
+        report_df['前年比(mm)'] = report_df['平均降水量(mm)'] - report_df['前年平均比(mm)']
+
+        #前年からの変化率(%)を計算する(小数点１桁)
+        report_df['前年比(%)'] = ((report_df['前年比(mm)'] / report_df['前年平均比(mm)']) * 100).round(1)    
+
+        #CSV出力する列を再集計っていする（前年比の列を追加）
+        report_df = report_df[[
+            '順位', '評価', '都市名',
+            '最大降水量(mm)', '最小降水量(mm)', '平均降水量(mm)',
+            '前年比(mm)', '前年比(%)',
+            '最大降水月', '最小降水月'    
+        ]]
+
         report_df.to_csv('rainfall_result.csv', index=False, encoding='utf-8-sig')  #CVS保存
         print('分析結果を rainfall_result.cvs に保存しました')
 
