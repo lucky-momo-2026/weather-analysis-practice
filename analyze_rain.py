@@ -89,6 +89,8 @@ def print_summary(avg_rain):
     plt.ylabel('降水量(mm)')
     plt.legend()
 
+    plt.savefig('reports/rainfall_compare.png')  #棒グラフ＋折れグラフ保存 
+
     #合体グラフ（棒＋折れ線）
     plt.figure(figsize=(8,5))
 
@@ -108,7 +110,7 @@ def print_summary(avg_rain):
     plt.legend()
 
     plt.tight_layout()
-    plt.savefig('rainfall_combo.png')
+    plt.savefig('reports/rainfall_combo.png')  #合体フラフ保存
     #plt.show()
 
 def main():
@@ -147,7 +149,7 @@ def main():
             avg_rain[city] = report['平均降水量(mm)']  #集計用に平均だけ辞書へ入れる
             report_rows.append(report) #csvように１年分の結果をためる
 
-        #print_summary(avg_rain)  #全年の集計結果を表示
+        print_summary(avg_rain)  #全年の集計結果を表示
 
         report_df = pd.DataFrame(report_rows)   #リストを表に変換
         report_df = report_df.sort_values(by='平均降水量(mm)', ascending=False)  #平均降水量が多い順に並べ替え
