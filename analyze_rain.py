@@ -109,7 +109,7 @@ def print_summary(avg_rain):
 
     plt.tight_layout()
     plt.savefig('rainfall_combo.png')
-    plt.show()
+    #plt.show()
 
 def main():
     if len(sys.argv) < 2:
@@ -118,7 +118,10 @@ def main():
 
     try:
         # 各都市ごとのデータを1行ずつ処理する
-        csv_path = sys.argv[1] 
+        csv_path = sys.argv[1]  #CVSのファイルのパスを取得
+        
+        #３番目以降の引数を都市名リストとして取得（なければ全都市）
+        cities = sys.argv[2:] if len(sys.argv) >2 else []
 
         df = pd.read_csv(csv_path)  #読み込むからread
         df = df.set_index(df.columns[0])  # df.columns は DataFrame列名　ここではcity の部分から呼び出す
@@ -134,13 +137,17 @@ def main():
         avg_rain = {}  #都市名・平均降水量をセットで入れる辞書
         report_rows = []  #各都市の分析結果をCSVようにためるリスト
 
+        #citiesに都市名が指定されている場合、該当行だけに絞り込む
+        if cities:
+            df = df[df.index.str.contains('|'.join(cities))]  #指定都市だけ残す
+
 
         for city, rain in df.iterrows():  # tokyo = df. loc[]は名前でその列のデータを抽出、for 〇, △ in df.iterrrows()は〇が行番号、△が行のデータ抽出
             report =print_city_report(city,rain, MONTH_MAP) #１年分の分析結果を受取る
             avg_rain[city] = report['平均降水量(mm)']  #集計用に平均だけ辞書へ入れる
             report_rows.append(report) #csvように１年分の結果をためる
 
-        print_summary(avg_rain)  #全年の集計結果を表示
+        #print_summary(avg_rain)  #全年の集計結果を表示
 
         report_df = pd.DataFrame(report_rows)   #リストを表に変換
         report_df = report_df.sort_values(by='平均降水量(mm)', ascending=False)  #平均降水量が多い順に並べ替え
