@@ -122,8 +122,16 @@ def main():
         # 各都市ごとのデータを1行ずつ処理する
         csv_path = sys.argv[1]  #CVSのファイルのパスを取得
         
-        #３番目以降の引数を都市名リストとして取得（なければ全都市）
-        cities = sys.argv[2:] if len(sys.argv) >2 else []
+        #sortオプションと都市名を分けて取得する
+        args = sys.argv[2:]  #CSVパス以降の引数を全部取得
+        sort_key = None  #sortキーの初期値はなし
+
+        if "--sort" in args:
+            sort_index = args.index("--sort")  #--sortの位置を取得
+            sort_key = args[sort_index + 1]  #--sortの次の値がソートキー
+            args = [a for a in args if a !="--sort" and a !=sort_key]  #--sortとキーを除いた残りが都市名
+
+        cities = args #残った引数が都市名リスト
 
         df = pd.read_csv(csv_path)  #読み込むからread
         df = df.set_index(df.columns[0])  # df.columns は DataFrame列名　ここではcity の部分から呼び出す
@@ -149,10 +157,22 @@ def main():
             avg_rain[city] = report['平均降水量(mm)']  #集計用に平均だけ辞書へ入れる
             report_rows.append(report) #csvように１年分の結果をためる
 
-        print_summary(avg_rain)  #全年の集計結果を表示
+        #全都市の時だけ主計結果を表示する（絞り込みはスキップ）
+        if not cities:
+            print_summary(avg_rain)  #全年の集計結果を表示
 
         report_df = pd.DataFrame(report_rows)   #リストを表に変換
-        report_df = report_df.sort_values(by='平均降水量(mm)', ascending=False)  #平均降水量が多い順に並べ替え
+
+        #ソートキーの対応表（引数と名前と列名を対応させる）
+        sort_map ={
+            "平均降水量": "平均降水量(mm)",
+            "最大降水量": "最大降水量(mm)",
+            "前年比": "前年比(mm)",
+            "前年比率": "前年比率(%)",
+        }
+        #sort_keyが指定されていれば対応する列でソート、なければ平均降水量準
+        sort_column = sort_map.get(sort_key, "平均降水量(mm)")
+
         report_df['順位'] = range(1, len(report_df) + 1)  #順位を追加　１位からスタート
 
         def rank_label(rank):  #評価ランクを追加（S/A/B）
@@ -176,10 +196,12 @@ def main():
         report_df['前年平均比(mm)'] = report_df.groupby('都市')['平均降水量(mm)'].shift(1)
 
         #前年との差(mm)を計算する
-        report_df['前年比(mm)'] = report_df['平均降水量(mm)'] - report_df['前年平均比(mm)']
+        report_df["前年比(mm)"] = (report_df["平均降水量(mm)"] - report_df['前年平均比(mm)']).round(1)
 
         #前年からの変化率(%)を計算する(小数点１桁)
         report_df['前年比(%)'] = ((report_df['前年比(mm)'] / report_df['前年平均比(mm)']) * 100).round(1)    
+
+        report_df = report_df.sort_values(by=sort_column, ascending=False)  #指定列で降順ソート
 
         #CSV出力する列を再集計っていする（前年比の列を追加）
         report_df = report_df[[
