@@ -45,18 +45,18 @@ python fetch_rain.py
 
 分析実行
 
-# 全都市を分析
+全都市を分析
 ```bash
 python analyze_rain.py rain_data.csv
 ```
 
-# 都市を絞り込んで分析
+都市を絞り込んで分析
 ```bash
 python analyze_rain.py rain_data.csv 札幌
 python analyze_rain.py rain_data.csv 札幌 東京
 ```
 
-# ソートキーを指定して分析
+ソートキーを指定して分析
 ```bash
 python analyze_rain.py rain_data.csv --sort 前年比
 python analyze_rain.py rain_data.csv --sort 平均降水量
@@ -64,7 +64,7 @@ python analyze_rain.py rain_data.csv --sort 最大降水量
 python analyze_rain.py rain_data.csv --sort 前年比率
 ```
 
-# 絞り込み＋ソートの組み合わせ
+絞り込み＋ソートの組み合わせ
 ```bash
 python analyze_rain.py rain_data.csv 札幌 東京 --sort 前年比
 ```
@@ -110,7 +110,7 @@ python analyze_rain.py rain_data.csv 札幌 東京 --sort 前年比
 | `reports/rainfall_combo.png` | 棒グラフ＋折れ線グラフの合体グラフ |
 ---
 
-##💡 工夫したポイント
+## 💡 工夫したポイント
 1. 都市・年をCSVから自動取得
 都市名と年をハードコードせず、読み込んだCSVのインデックスから自動取得しています。これにより年数や都市数が変わっても修正不要で動作します。
 
