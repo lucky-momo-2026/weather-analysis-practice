@@ -15,7 +15,7 @@ CITIES = {
 # 気象庁のURLテンプレート
 BASE_URL = "https://www.data.jma.go.jp/obd/stats/etrn/view/monthly_s1.php"
 
-YEARS = [2023,2024]
+YEARS = [2022, 2023,2024]
 
 def fetch_rain(city, prec_no, block_no, year):
     url = f"{BASE_URL}?prec_no={prec_no}&block_no={block_no}&year={year}"  #気象庁のURLを組み立てる

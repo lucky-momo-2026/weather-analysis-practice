@@ -59,8 +59,8 @@ def print_summary(avg_rain):
     print('平均降水量：', avg_rain[low_city], 'mm')
 
     #グラフ表示都市名と都市を分ける
-    city_names = ['札幌', '東京', '名古屋', '大阪', '福岡']
-    years = ['2023', '2024']
+    city_names = sorted(set(k.split('_')[0] for k in avg_rain.keys()))  #都市名を重複なしで取得
+    years = sorted(set(k.split('_')[1] for k in avg_rain.keys()))  #年を重複なしで取得
 
     #年ごとの平均降水量を取り出す
     data_by_year = {}
